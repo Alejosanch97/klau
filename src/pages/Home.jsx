@@ -130,7 +130,12 @@ const Lightbox = ({ start, onClose }) => {
 			const img = new Image();
 			img.src = cld(PHOTOS[(i + d + n) % n], "f_auto,q_auto,w_1400");
 		});
-		thumbsRef.current?.children[i]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+		// Centra la miniatura moviendo SOLO la tira (scrollIntoView en iOS movía todo el lightbox)
+		const box = thumbsRef.current;
+		const el = box?.children[i];
+		if (box && el) {
+			box.scrollTo({ left: el.offsetLeft - box.clientWidth / 2 + el.clientWidth / 2, behavior: "smooth" });
+		}
 	}, [i, n]);
 
 	const onDown = (e) => (sx.current = e.clientX);
@@ -147,7 +152,7 @@ const Lightbox = ({ start, onClose }) => {
 		<div className="kb-lb" role="dialog" aria-modal="true" aria-label="Lookbook de Klaudia Briceño">
 			<header className="kb-lb-top">
 				<span>Klaudia Briceño — <i>Lookbook</i></span>
-				<button onClick={onClose}>Cerrar ✕</button>
+				<button type="button" onClick={onClose} aria-label="Cerrar lookbook">Cerrar ✕</button>
 			</header>
 
 			<div className="kb-lb-stage" onPointerDown={onDown} onPointerUp={onUp}>
